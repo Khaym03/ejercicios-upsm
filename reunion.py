@@ -44,7 +44,6 @@ class PartyApp:
         header.pack()
 
     def create_stats_frame(self):
-        # Crear etiquetas para mostrar las estadísticas
         self.stats_label = tk.Label(
             self.stats_frame,
             text="Estadísticas de la Fiesta",
@@ -90,10 +89,27 @@ class PartyApp:
         )
         self.oldest_label.pack(anchor="w", pady=self.gap_1)
 
+        self.avr_age_male = tk.Label(
+            self.stats_frame,
+            text="Edad promedio de los hombres: N/A",
+            font=("Arial", self.sm),
+            background="white",
+            justify="left",
+        )
+        self.avr_age_male.pack(anchor="w", pady=self.gap_1)
+
+        self.avr_age_female = tk.Label(
+            self.stats_frame,
+            text="Edad promedio de las mujeres: N/A",
+            font=("Arial", self.sm),
+            background="white",
+            justify="left",
+        )
+        self.avr_age_female.pack(anchor="w", pady=self.gap_1)
+
     def field_factory(self, name: str):
         field = tk.Frame(self.form_frame, background="white")
 
-        # Crear la etiqueta y alinearla a la izquierda
         label = tk.Label(
             field,
             text=name,
@@ -106,7 +122,6 @@ class PartyApp:
             pady=self.gap_1,
         )
 
-        # Crear la entrada y alinearla a la izquierda
         input_entry = tk.Entry(
             field,
             width=42,
@@ -115,14 +130,13 @@ class PartyApp:
         )
         input_entry.pack(side=tk.LEFT, anchor="w")
 
-        field.pack(anchor="w")  # Empaquetar el campo completo a la izquierda
+        field.pack(anchor="w")
 
         return input_entry
 
     def radio_button_factory(self, name: str, options: list):
         field = tk.Frame(self.form_frame, background="white")
 
-        # Crear la etiqueta y alinearla a la izquierda
         label = tk.Label(
             field,
             text=name,
@@ -132,7 +146,7 @@ class PartyApp:
         )
         label.pack(anchor="w", pady=self.gap_1)
 
-        # Crear el grupo de radio buttons
+        # Crea un grupo de radio buttons
         self.radio_var = tk.StringVar(value=options[0])
         for option in options:
             radio_button = tk.Radiobutton(
@@ -145,7 +159,7 @@ class PartyApp:
             )
             radio_button.pack(padx=5)
 
-        field.pack(anchor="w")  # Empaquetar el campo completo a la izquierda
+        field.pack(anchor="w")
 
         return self.radio_var
 
@@ -173,15 +187,34 @@ class PartyApp:
 
     def update_stats(self):
         total = len(self.numOfPersons)
-        female_count = sum(1 for _, gender in self.numOfPersons if gender == "Femenino")
-        male_count = sum(1 for _, gender in self.numOfPersons if gender == "Masculino")
+        female_count = male_count = 0
+        female_total_age = male_total_age = avr_female_age = avr_male_age = 0
+
         oldest_age = max((age for age, _ in self.numOfPersons), default="N/A")
 
-        # Actualizar las etiquetas
+        for age, gender in self.numOfPersons:
+            if gender == "Femenino":
+                female_count += 1
+                female_total_age += age
+
+            if gender == "Masculino":
+                male_count += 1
+                male_total_age += age
+
+        if female_count is not 0:
+            avr_female_age = female_total_age / female_count
+
+        if male_count is not 0:
+            avr_male_age = male_total_age / male_count
+
         self.total_label.config(text=f"Total de personas: {total}")
         self.female_label.config(text=f"Mujeres: {female_count}")
         self.male_label.config(text=f"Hombres: {male_count}")
         self.oldest_label.config(text=f"Persona más vieja: {oldest_age} años")
+        self.avr_age_male.config(text=f"Edad promedio de los hombres: {avr_male_age}")
+        self.avr_age_female.config(
+            text=f"Edad promedio de las mujeres: {avr_female_age}"
+        )
 
 
 if __name__ == "__main__":
